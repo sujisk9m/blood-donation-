@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blood Donation System</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- 🧬 Background Animations -->
+  <div id="dna-bg" class="dna-bg"></div>
+  <div id="cells-bg" class="cells-bg"></div>
+
+  <!-- 🔴 HEADER -->
+  <header class="top-bar fade-in">
+    <div class="logo">🩸 Blood Donation Platform</div>
+    
+    <div class="menu-toggle" onclick="toggleMenu()">☰ Menu</div>
+    
+    <nav id="navbar">
+      <!-- ALWAYS VISIBLE -->
+      <button class="nav-btn" onclick="showSection('home')">Home</button>
+      <button class="nav-btn" onclick="showSection('about')">About</button>
+
+      <!-- GUEST ONLY (Hidden after login) -->
+      <button class="nav-btn guest-item" onclick="showSection('login')">Login</button>
+      <button class="nav-btn guest-item" onclick="showSection('register')">Register</button>
+
+      <!-- AUTH REQUIRED (Hidden before login) -->
+      <button class="nav-btn auth-item" onclick="showSection('dashboard')" style="display:none;">Dashboard</button>
+      <button class="nav-btn auth-item" onclick="showSection('find')" style="display:none;">Find Donors</button>
+      <button class="nav-btn auth-item" onclick="showSection('request')" style="display:none;">Request Blood</button>
+      <button class="nav-btn auth-item" id="navRewards" onclick="showSection('rewards')" style="display:none;">Rewards</button>
+      <button class="nav-btn emergency-btn auth-item" onclick="showSection('emergency')" style="display:none;">🚨 Emergency</button>
+      <button class="nav-btn auth-item" onclick="logout()" style="display:none; border: 1px solid white;">Logout</button>
+    </nav>
+  </header>
+
+  <!-- 💛 SUBTITLE -->
+  <div class="subtitle-bar fade-in">
+    Save Lives • Be a Hero ❤️
+  </div>
+
+  <!-- 🔵 MAIN CONTENT AREA -->
+  <main>
+    
+    <!-- 🏠 HOME -->
+    <section id="home" class="hero-text fade-in">
+      <h2 style="font-size: 2rem;">Welcome to the <br><span style="color: #b71c1c;">Mission</span></h2>
+      <p>Every drop counts. Connect with hospitals, find donors, and save lives in real-time.</p>
+      <button onclick="showSection('register')" class="primary-btn guest-item">Become a Donor</button>
+      <button onclick="showSection('login')" class="secondary-btn guest-item">Login to Access Portal</button>
+    </section>
+
+    <!-- 🔐 LOGIN -->
+    <section id="login" class="card">
+      <h2>Account Login</h2>
+      <select id="loginRole" onchange="updateLoginHint()">
+        <option value="Public">Public / User</option>
+        <option value="Donor" selected>Blood Donor</option>
+        <option value="Hospital">Hospital Management</option>
+      </select>
+      <input type="text" id="loginId" placeholder="Enter ID (e.g., DONOR-100)">
+      <input type="password" id="loginPassword" placeholder="Password (Any text for demo)">
+      <button onclick="login()">Secure Login</button>
+      <p id="loginHint" style="font-size: 12px; color: #555; margin-top: 10px;">Hint: Use <b>DONOR-100</b></p>
+    </section>
+
+    <!-- 📝 REGISTER AS DONOR -->
+    <section id="register" class="card">
+      <h2>Register as Donor</h2>
+      <input type="text" id="regName" placeholder="Full Name">
+      <input type="number" id="regAge" placeholder="Age">
+      <select id="regBloodGroup">
+        <option value="" disabled selected>Select Blood Group</option>
+        <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+        <option>O+</option><option>O-</option><option>AB+</option><option>AB-</option>
+      </select>
+      <input type="text" id="regLocation" placeholder="Full Area Name & City (e.g. Anna Nagar, Chennai)">
+      <input type="text" id="regMobile" placeholder="Mobile Number">
+      <button onclick="registerDonor()">Create Donor ID</button>
+    </section>
+
+    <!-- 🔍 FIND DONORS -->
+    <section id="find" class="card">
+      <h2>Find Donors</h2>
+      <select id="searchBlood">
+        <option value="" disabled selected>Blood Group Needed</option>
+        <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+        <option>O+</option><option>O-</option><option>AB+</option><option>AB-</option>
+      </select>
+      <input type="text" id="searchCity" placeholder="City or Full Area Name">
+      <button onclick="searchDonors()">Search Nearby Donors</button>
+      <div id="donorResults" class="results-box"></div>
+    </section>
+
+    <!-- 🩸 REQUEST BLOOD -->
+    <section id="request" class="card">
+      <h2>Request Blood</h2>
+      <input type="text" placeholder="Patient Name">
+      <input type="text" placeholder="Blood Group Needed">
+      <input type="text" placeholder="Hospital Name & Location">
+      <button onclick="alert('Request submitted to the portal successfully!')">Submit Request</button>
+    </section>
+
+    <!-- 🎁 REWARDS -->
+    <section id="rewards" class="card">
+      <h2>Donor Rewards</h2>
+      <p>Give blood, earn rewards!</p>
+      <div class="reward-box">
+        <h3 id="donorPoints">Your Donations: 0</h3>
+        <p id="rewardStatus">Login as a donor to check your status.</p>
+      </div>
+      <button onclick="claimReward()" style="background: gold; color: black;">Claim Reward</button>
+    </section>
+
+    <!-- ℹ️ ABOUT -->
+    <section id="about" class="card">
+      <h2>About Us</h2>
+      <p>This platform connects donors, the public, and hospitals in real-time. Role-based IDs ensure secure data management.</p>
+      <p><b>Public:</b> Can search donors & request blood.<br><b>Donors:</b> Can donate, earn rewards, and receive emergency alerts.<br><b>Hospitals:</b> Can broadcast emergencies and manage inventory.</p>
+    </section>
+
+    <!-- 🚨 EMERGENCY TAB -->
+    <section id="emergency" class="card emergency-card">
+      <h2>🚨 CRITICAL EMERGENCY</h2>
+      <p>Broadcast immediate blood requirement to all registered donors via SMS.</p>
+      <input type="text" id="emgPatient" placeholder="Patient Name" style="border: 1px solid red;">
+      <select id="emgBlood" style="border: 1px solid red;">
+        <option>O+</option><option>O-</option><option>A+</option><option>A-</option>
+        <option>B+</option><option>B-</option><option>AB+</option><option>AB-</option>
+      </select>
+      <input type="text" id="emgLocation" placeholder="Hospital / City Area" style="border: 1px solid red;">
+      <button onclick="broadcastEmergency()" class="emergency-btn-large">BROADCAST TO MOBILES NOW</button>
+    </section>
+
+    <!-- 📊 DASHBOARD (Updated to show Tabs clearly) -->
+    <section id="dashboard" class="card" style="max-width: 480px;">
+      <h2>User Dashboard</h2>
+      <p id="dashWelcome" style="font-weight:bold; color:#800000; text-align:center;"></p>
+      
+      <!-- QUICK ACCESS MENU -->
+      <div class="dashboard-grid">
+        <button onclick="showSection('find')" style="background: #333;">🔍 Find Donors</button>
+        <button onclick="showSection('request')" style="background: #333;">🩸 Request Blood</button>
+        <button onclick="showSection('rewards')" id="dashRewardsBtn" style="background: gold; color: black;">🎁 Rewards</button>
+        <button onclick="showSection('emergency')" style="background: red;">🚨 Emergency</button>
+      </div>
+
+      <hr style="border:0; border-top:1px solid #ccc; margin:15px 0;">
+      
+      <!-- ROLE SPECIFIC CONTROLS -->
+      <div id="donorControls" style="display:none; text-align:center;">
+        <p>Thank you for being a registered hero!</p>
+        <button onclick="simulateGiveBlood()" style="background: #28a745;">✅ I Donated Blood Today</button>
+      </div>
+
+      <div id="hospitalControls" style="display:none; text-align:center;">
+        <p>Hospital Management Portal Active.</p>
+      </div>
+
+      <div id="publicControls" style="display:none; text-align:center;">
+        <p>Public Access Portal Active.</p>
+      </div>
+      
+      <button onclick="logout()" style="background: #666; margin-top: 15px;">Logout</button>
+    </section>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
